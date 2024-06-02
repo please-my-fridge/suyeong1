@@ -1,0 +1,7 @@
+<!-- res/values/strings.xml -->
+<resources>
+    <string name="app_name">AI3</string>
+    <string name="enter_ingredient">Enter ingredient</string>
+    <string name="add_ingredient">Add Ingredient</string>
+    <string name="get_recipes">Get Recipes</string>
+</resources>

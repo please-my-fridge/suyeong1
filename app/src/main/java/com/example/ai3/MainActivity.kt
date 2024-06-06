@@ -1,5 +1,6 @@
 package com.example.ai3
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -31,34 +32,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        binding.getRecipesButton.setOnClickListener {
+        binding.searchButton.setOnClickListener {
             val ingredient = binding.ingredientEditText.text.toString().trim()
             if (ingredient.isNotEmpty()) {
-                getRecommendedRecipes(ingredient)
-            } else {
-                Log.d("MainActivity", "Ingredient is empty")
+                searchRecipes(ingredient)
             }
         }
     }
 
-    private fun getRecommendedRecipes(ingredient: String) {
+    private fun searchRecipes(ingredient: String) {
         firestore.collection("recipes")
             .whereArrayContains("ingredients", ingredient)
             .get()
             .addOnSuccessListener { result ->
-                val recipes = result.documents.map { document ->
-                    document.toObject(Recipe::class.java) ?: Recipe()
-                }
+                val recipes = result.toObjects(Recipe::class.java)
+                Log.d("MainActivity", "Recipes found: $recipes")
                 updateRecyclerView(recipes)
             }
             .addOnFailureListener { e ->
-                Log.e("MainActivity", "Failed to get recipes", e)
+                Log.e("MainActivity", "Error fetching recipes", e)
             }
     }
 
     private fun updateRecyclerView(recipes: List<Recipe>) {
-        recipesAdapter = RecipesAdapter(recipes)
-        binding.recyclerView.adapter = recipesAdapter
-        recipesAdapter.notifyDataSetChanged()
+        recipesAdapter.updateData(recipes)
     }
 }
